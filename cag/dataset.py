@@ -2,9 +2,11 @@ import json
 import random
 import pandas as pd
 from typing import Iterator
+from relationship_extractor import extract_relationships_summary
 
 
 rand_seed = None
+use_rel_summary = False
 
 
 def _parse_squad_data(raw):
@@ -84,8 +86,10 @@ def squad(
             if max_paragraph is not None and max_paragraph < len(article["paragraphs"])
             else len(article["paragraphs"])
         )
-        text_list.append(article["title"])
-        text_list.append("\n".join(article["paragraphs"][0:max_para]))
+        paragraphs = "\n".join(article["paragraphs"][0:max_para])
+        summary = extract_relationships_summary(paragraphs)
+        full_content = "Title: " + article["title"] + "\n\n" + "Relational Context Summary: " + summary + "\n\n" + "Source Context: " + paragraphs
+        text_list.append(full_content)
 
     # Check if the knowledge id of qas is less than the max_knowledge
     questions = [
@@ -159,7 +163,9 @@ def get(
     max_knowledge: int | None = None,
     max_paragraph: int | None = None,
     max_questions: int | None = None,
+    use_rel_summary: bool = False,
 ) -> tuple[list[str], Iterator[tuple[str, str]]]:
+    use_rel_summary = use_rel_summary
     match dataset:
         case "kis_sample":
             path = "./datasets/rag_sample_qas_from_kis.csv"
