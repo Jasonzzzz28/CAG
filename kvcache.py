@@ -172,6 +172,10 @@ def kvcache_test(args: argparse.Namespace):
     kvcache_path = "./data_cache/cache_knowledges.pt"
 
     knowledges = '\n\n\n\n\n\n'.join(text_list)
+
+    # for debugging
+    print(knowledges)
+    
     knowledge_cache, prepare_time = prepare_kvcache(knowledges, filepath=kvcache_path, answer_instruction=answer_instruction)
     kv_len = knowledge_cache.key_cache[0].shape[-2]
     print(f"KVcache prepared in {prepare_time} seconds")
