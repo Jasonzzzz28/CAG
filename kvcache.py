@@ -167,7 +167,7 @@ def prepare_kvcache(documents, filepath: str = "./data_cache/cache_knowledges.pt
 
 def kvcache_test(args: argparse.Namespace):
     answer_instruction = "Answer the question with a super short answer."
-    text_list, dataset = cagds.get(args.dataset, max_knowledge=args.maxKnowledge, max_paragraph=args.maxParagraph, max_questions=args.maxQuestion, rel_summary=args.relSummary)
+    text_list, dataset = cagds.get(args.dataset, max_knowledge=args.maxKnowledge, max_paragraph=args.maxParagraph, max_questions=args.maxQuestion, use_rel_summary=args.relSummary)
 
     kvcache_path = "./data_cache/cache_knowledges.pt"
 

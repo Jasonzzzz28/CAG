@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Relationship Extractor
 
@@ -14,7 +13,7 @@ import google.generativeai as genai
 from google.api_core.exceptions import GoogleAPIError
 
 # Constants
-MODEL_NAME = "models/models/gemini-2.0-flash-lite"
+MODEL_NAME = "models/gemini-2.0-flash-lite"
 DEFAULT_TEMPERATURE = 0.2
 DEFAULT_MAX_OUTPUT_TOKENS = 2048
 
@@ -61,8 +60,6 @@ def extract_relationships_summary(
     )
     
     # Create the prompt
-    max_knowledge_triplets = max_triplets
-    
     summary_instruction = (
     "Generate a concise summary of the provided context, focusing on the most important relationships, "
     "interactions, and dependencies between concepts, entities, or events. The summary should help a language model "
@@ -85,4 +82,4 @@ def extract_relationships_summary(
     
     # Generate the response
     response = model.generate_content(prompt)
-    return response
+    return response.text

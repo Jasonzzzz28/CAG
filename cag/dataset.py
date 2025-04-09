@@ -6,7 +6,7 @@ from relationship_extractor import extract_relationships_summary
 
 
 rand_seed = None
-use_rel_summary = False
+rel_summary_flag = False
 
 
 def _parse_squad_data(raw):
@@ -86,10 +86,14 @@ def squad(
             if max_paragraph is not None and max_paragraph < len(article["paragraphs"])
             else len(article["paragraphs"])
         )
-        paragraphs = "\n".join(article["paragraphs"][0:max_para])
-        summary = extract_relationships_summary(paragraphs)
-        full_content = "Title: " + article["title"] + "\n\n" + "Relational Context Summary: " + summary + "\n\n" + "Source Context: " + paragraphs
-        text_list.append(full_content)
+        if rel_summary_flag:
+            paragraphs = "\n".join(article["paragraphs"][0:max_para])
+            summary = extract_relationships_summary(paragraphs)
+            full_content = "Title: " + article["title"] + "\n\n" + "Relational Context Summary: " + summary + "\n\n" + "Source Context: " + paragraphs
+            text_list.append(full_content)
+        else:
+            text_list.append(article["title"])
+            text_list.append("\n".join(article["paragraphs"][0:max_para]))
 
     # Check if the knowledge id of qas is less than the max_knowledge
     questions = [
@@ -165,7 +169,8 @@ def get(
     max_questions: int | None = None,
     use_rel_summary: bool = False,
 ) -> tuple[list[str], Iterator[tuple[str, str]]]:
-    use_rel_summary = use_rel_summary
+    global rel_summary_flag
+    rel_summary_flag = use_rel_summary
     match dataset:
         case "kis_sample":
             path = "./datasets/rag_sample_qas_from_kis.csv"
