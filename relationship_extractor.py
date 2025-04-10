@@ -1,7 +1,7 @@
 """
 Relationship Extractor
 
-This script uses Google's Gemini 2.0 Flash Thinking Experimental 01-21 model
+This script uses Google's Gemini 2.0 Flash Lite model
 to extract relationships from a given text corpus.
 """
 
@@ -17,11 +17,15 @@ MODEL_NAME = "models/gemini-2.0-flash-lite"
 DEFAULT_TEMPERATURE = 0.2
 DEFAULT_MAX_OUTPUT_TOKENS = 2048
 
+from dotenv import load_dotenv
+load_dotenv()
+
 def setup_gemini_api() -> None:
     """
     Set up the Gemini API with the API key from environment variables.
     """
-    api_key = os.environ.get("GOOGLE_API_KEY")
+    # api_key = os.environ.get("GOOGLE_API_KEY")
+    api_key = os.getenv("GOOGLE_API_KEY")
     if not api_key:
         raise ValueError(
             "GOOGLE_API_KEY environment variable not set. "
@@ -33,8 +37,7 @@ def setup_gemini_api() -> None:
 def extract_relationships_summary(
     text: str,
     temperature: float = DEFAULT_TEMPERATURE,
-    max_output_tokens: int = DEFAULT_MAX_OUTPUT_TOKENS,
-    max_triplets: int = 20
+    max_output_tokens: int = DEFAULT_MAX_OUTPUT_TOKENS
 ) -> Dict[str, Any]:
     """
     Extract relationships from the given text using Gemini 2.0.
