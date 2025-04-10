@@ -175,7 +175,7 @@ def kvcache_test(args: argparse.Namespace):
 
     # for debugging
     print(knowledges)
-    
+
     knowledge_cache, prepare_time = prepare_kvcache(knowledges, filepath=kvcache_path, answer_instruction=answer_instruction)
     kv_len = knowledge_cache.key_cache[0].shape[-2]
     print(f"KVcache prepared in {prepare_time} seconds")
@@ -246,6 +246,7 @@ def kvcache_test(args: argparse.Namespace):
         # print("D: ", knowledges)
         print("Q: ", question)
         print("A: ", generated_text)
+        print("GT: ", ground_truth)
  
         # Evaluate bert-score similarity
         similarity = cagsim.bert(generated_text, ground_truth)
