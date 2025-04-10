@@ -2,6 +2,7 @@ from enum import Enum
 
 class ConfigName(Enum):
     RAND_SEED = "RAND_SEED"
+    JSON_AS_KNOWLEDGE = "JSON_AS_KNOWLEDGE"
 
 _CONFIG = {
     # Add default configuration parameters

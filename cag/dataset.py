@@ -2,12 +2,12 @@ import json
 import random
 import pandas as pd
 from typing import Iterator
-from relationship_extractor import extract_relationships_summary
+from relationship_extractor import extract_relationships_summary, extract_relationships
 from config import ConfigName, get_config
 
 rand_seed = None
 rel_summary_flag = False
-
+json_as_knowledge = False
 
 def _parse_squad_data(raw):
     dataset = {"ki_text": [], "qas": []}
@@ -92,6 +92,10 @@ def squad(
             summary = extract_relationships_summary(paragraphs)
             full_content = "Title: " + article["title"] + "\n\n" + "Relational Context Summary: " + summary + "\n\n" + "Source Context: " + paragraphs
             text_list.append(full_content)
+        elif json_as_knowledge:
+            paragraphs = "\n".join(article["paragraphs"][0:max_para])
+            text_list.append(article["title"])
+            text_list.append(extract_relationships(paragraphs))
         else:
             text_list.append(article["title"])
             text_list.append("\n".join(article["paragraphs"][0:max_para]))
@@ -175,6 +179,9 @@ def get(
     rel_summary_flag = use_rel_summary
     global rand_seed
     rand_seed = get_config(ConfigName.RAND_SEED)
+    global json_as_knowledge
+    json_as_knowledge = get_config(ConfigName.JSON_AS_KNOWLEDGE)
+
     match dataset:
         case "kis_sample":
             path = "./datasets/rag_sample_qas_from_kis.csv"
