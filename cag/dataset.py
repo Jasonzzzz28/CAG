@@ -2,9 +2,12 @@ import json
 import random
 import pandas as pd
 from typing import Iterator
+from relationship_extractor import extract_relationships_summary
 from config import ConfigName, get_config
 
 rand_seed = None
+rel_summary_flag = False
+
 
 def _parse_squad_data(raw):
     dataset = {"ki_text": [], "qas": []}
@@ -84,8 +87,14 @@ def squad(
             if max_paragraph is not None and max_paragraph < len(article["paragraphs"])
             else len(article["paragraphs"])
         )
-        text_list.append(article["title"])
-        text_list.append("\n".join(article["paragraphs"][0:max_para]))
+        if rel_summary_flag:
+            paragraphs = "\n".join(article["paragraphs"][0:max_para])
+            summary = extract_relationships_summary(paragraphs)
+            full_content = "Title: " + article["title"] + "\n\n" + "Relational Context Summary: " + summary + "\n\n" + "Source Context: " + paragraphs
+            text_list.append(full_content)
+        else:
+            text_list.append(article["title"])
+            text_list.append("\n".join(article["paragraphs"][0:max_para]))
 
     # Check if the knowledge id of qas is less than the max_knowledge
     questions = [
@@ -160,7 +169,10 @@ def get(
     max_knowledge: int | None = None,
     max_paragraph: int | None = None,
     max_questions: int | None = None,
+    use_rel_summary: bool = False,
 ) -> tuple[list[str], Iterator[tuple[str, str]]]:
+    global rel_summary_flag
+    rel_summary_flag = use_rel_summary
     global rand_seed
     rand_seed = get_config(ConfigName.RAND_SEED)
     match dataset:

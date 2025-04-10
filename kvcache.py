@@ -167,11 +167,15 @@ def prepare_kvcache(documents, filepath: str = "./data_cache/cache_knowledges.pt
 
 def kvcache_test(args: argparse.Namespace):
     answer_instruction = "Answer the question with a super short answer."
-    text_list, dataset = cagds.get(args.dataset, max_knowledge=args.maxKnowledge, max_paragraph=args.maxParagraph, max_questions=args.maxQuestion)
+    text_list, dataset = cagds.get(args.dataset, max_knowledge=args.maxKnowledge, max_paragraph=args.maxParagraph, max_questions=args.maxQuestion, use_rel_summary=args.relSummary)
 
     kvcache_path = "./data_cache/cache_knowledges.pt"
 
     knowledges = '\n\n\n\n\n\n'.join(text_list)
+
+    # for debugging
+    print(knowledges)
+
     knowledge_cache, prepare_time = prepare_kvcache(knowledges, filepath=kvcache_path, answer_instruction=answer_instruction)
     kv_len = knowledge_cache.key_cache[0].shape[-2]
     print(f"KVcache prepared in {prepare_time} seconds")
@@ -242,6 +246,7 @@ def kvcache_test(args: argparse.Namespace):
         # print("D: ", knowledges)
         print("Q: ", question)
         print("A: ", generated_text)
+        print("GT: ", ground_truth)
  
         # Evaluate bert-score similarity
         similarity = cagsim.bert(generated_text, ground_truth)
@@ -325,6 +330,7 @@ if __name__ == "__main__":
                                  'squad-dev', 'squad-train',
                                  'hotpotqa-dev',  'hotpotqa-train', 'hotpotqa-test'])
     parser.add_argument('--randomSeed', required=False, default=None, type=int, help='Random seed to use')
+    parser.add_argument('--relSummary', required=False, default=False, type=bool, help='Add relationship summary')
     # 48 Articles, each article average 40~50 paragraph, each average 5~10 questions
 
     args = parser.parse_args()
