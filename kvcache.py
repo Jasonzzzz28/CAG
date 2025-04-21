@@ -331,7 +331,7 @@ if __name__ == "__main__":
                                  'hotpotqa-dev',  'hotpotqa-train', 'hotpotqa-test'])
     parser.add_argument('--randomSeed', required=False, default=None, type=int, help='Random seed to use')
     parser.add_argument('--relSummary', required=False, default=False, type=bool, help='Add relationship summary')
-    parser.add_argument('--jsonAsKowledge', required=False, default=False, type=bool, help='Use relationships json as knowledge instead of raw text knowledge')
+    parser.add_argument('--jsonAsKnowledge', required=False, default=False, type=bool, help='Use relationships json as knowledge instead of raw text knowledge')
     # 48 Articles, each article average 40~50 paragraph, each average 5~10 questions
 
     args = parser.parse_args()
@@ -342,8 +342,8 @@ if __name__ == "__main__":
     if args.randomSeed != None:
         set_config(ConfigName.RAND_SEED, args.randomSeed)
     
-    if args.jsonAsKowledge != None:
-        set_config(ConfigName.JSON_AS_KNOWLEDGE, args.jsonAsKowledge)
+    if args.jsonAsKnowledge != None:
+        set_config(ConfigName.JSON_AS_KNOWLEDGE, args.jsonAsKnowledge)
 
     if args.quantized:
         tokenizer, model = load_quantized_model(model_name=model_name, hf_token=HF_TOKEN)
