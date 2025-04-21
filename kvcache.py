@@ -343,7 +343,7 @@ if __name__ == "__main__":
         set_config(ConfigName.RAND_SEED, args.randomSeed)
     
     if args.jsonAsKowledge != None:
-        set_config(ConfigName.JSON_AS_KNOWLEDGE, True)
+        set_config(ConfigName.JSON_AS_KNOWLEDGE, args.jsonAsKowledge)
 
     if args.quantized:
         tokenizer, model = load_quantized_model(model_name=model_name, hf_token=HF_TOKEN)
