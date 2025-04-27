@@ -2,10 +2,12 @@ import json
 import random
 import pandas as pd
 from typing import Iterator
-
+from relationship_extractor import extract_relationships_summary, extract_relationships
+from config import ConfigName, get_config
 
 rand_seed = None
-
+rel_summary_flag = False
+json_as_knowledge = False
 
 def _parse_squad_data(raw):
     dataset = {"ki_text": [], "qas": []}
@@ -70,6 +72,7 @@ def squad(
 
     # Shuffle the Articles and Questions
     if rand_seed is not None:
+        print("rand_seed: ", rand_seed)
         random.seed(rand_seed)
         random.shuffle(parsed_data["ki_text"])
         random.shuffle(parsed_data["qas"])
@@ -84,8 +87,18 @@ def squad(
             if max_paragraph is not None and max_paragraph < len(article["paragraphs"])
             else len(article["paragraphs"])
         )
-        text_list.append(article["title"])
-        text_list.append("\n".join(article["paragraphs"][0:max_para]))
+        if rel_summary_flag:
+            paragraphs = "\n".join(article["paragraphs"][0:max_para])
+            summary = extract_relationships_summary(paragraphs)
+            full_content = "Title: " + article["title"] + "\n\n" + "Relational Context Summary: " + summary + "\n\n" + "Source Context: " + paragraphs
+            text_list.append(full_content)
+        elif json_as_knowledge:
+            paragraphs = "\n".join(article["paragraphs"][0:max_para])
+            text_list.append(article["title"])
+            text_list.append(extract_relationships(paragraphs))
+        else:
+            text_list.append(article["title"])
+            text_list.append("\n".join(article["paragraphs"][0:max_para]))
 
     # Check if the knowledge id of qas is less than the max_knowledge
     questions = [
@@ -119,6 +132,7 @@ def hotpotqa(
         data = json.load(file)
 
     if rand_seed is not None:
+        print("rand_seed: ", rand_seed)
         random.seed(rand_seed)
         random.shuffle(data)
 
@@ -159,7 +173,15 @@ def get(
     max_knowledge: int | None = None,
     max_paragraph: int | None = None,
     max_questions: int | None = None,
+    use_rel_summary: bool = False,
 ) -> tuple[list[str], Iterator[tuple[str, str]]]:
+    global rel_summary_flag
+    rel_summary_flag = use_rel_summary
+    global rand_seed
+    rand_seed = get_config(ConfigName.RAND_SEED)
+    global json_as_knowledge
+    json_as_knowledge = get_config(ConfigName.JSON_AS_KNOWLEDGE)
+
     match dataset:
         case "kis_sample":
             path = "./datasets/rag_sample_qas_from_kis.csv"
